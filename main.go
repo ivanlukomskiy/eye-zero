@@ -116,6 +116,7 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
+	log.Print("kek?")
 
 	defer func() {
 		if err := peerConnection.Close(); err != nil {

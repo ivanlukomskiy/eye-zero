@@ -112,10 +112,10 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
-	if _, err = peerConnection.AddTrack(videoTrack); err != nil {
-		log.Print(err)
-		return
-	}
+	//if _, err = peerConnection.AddTrack(videoTrack); err != nil {
+	//	log.Print(err)
+	//	return
+	//}
 
 	defer func() {
 		if err := peerConnection.Close(); err != nil {

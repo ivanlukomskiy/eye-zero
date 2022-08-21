@@ -12,6 +12,8 @@
         if (event.track.kind === 'audio') {
             return
         }
+        console.log("Track received", event.track);
+        console.log("event.streams[0]", event.streams[0]);
         var el = document.getElementById('video1')
         el.srcObject = event.streams[0]
         el.autoplay = true

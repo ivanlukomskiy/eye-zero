@@ -1,4 +1,4 @@
-package eye_zero
+package main
 
 import (
 	"encoding/json"

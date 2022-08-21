@@ -47,9 +47,15 @@ func CreatePipeline(codecName string, tracks []*webrtc.TrackLocalStaticSample, p
 	var clockRate float32
 
 	//pipelineStr = "rpicamsrc annotation-mode=12 bitrate=256000 preview=false ! video/x-h264, framerate=1/1, stream-format=byte-stream, profile=constrained-baseline, level=3.0 ! queue max-size-time=100000000 ! h264parse config-interval=-1 ! video/x-h264, alignment=au, stream-format=byte-stream ! " + pipelineStr
+	pipelineStr = "rpicamsrc bitrate=256000 preview=false " +
+		"! video/x-h264, framerate=30/1, width=640, height=480, stream-format=byte-stream, profile=constrained-baseline " +
+		"! queue max-size-time=100000000 " +
+		"! h264parse config-interval=-1 " +
+		"! video/x-h264, alignment=au, stream-format=byte-stream " +
+		"! " + pipelineStr
 
 	// works ok, but eats through cpu
-	pipelineStr = "rpicamsrc bitrate=256000 preview=false ! video/x-raw, width=640, height=480, framerate=30/1 ! x264enc speed-preset=ultrafast tune=zerolatency key-int-max=20  ! video/x-h264,stream-format=byte-stream ! " + pipelineStr
+	//pipelineStr = "rpicamsrc bitrate=256000 preview=false ! video/x-raw, width=640, height=480, framerate=30/1 ! x264enc speed-preset=ultrafast tune=zerolatency key-int-max=20  ! video/x-h264,stream-format=byte-stream ! " + pipelineStr
 
 	// works ok, but its a test source
 	//pipelineStr = "videotestsrc ! video/x-raw,format=I420 ! x264enc speed-preset=ultrafast tune=zerolatency key-int-max=20 ! video/x-h264,stream-format=byte-stream ! " + pipelineStr

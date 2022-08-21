@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"eye-zero/gst"
-	"flag"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/pion/webrtc/v3"
@@ -31,8 +30,9 @@ type websocketMessage struct {
 }
 
 func main() {
-	videoSrc := flag.String("video-src", "videotestsrc", "GStreamer video src")
-	flag.Parse()
+	//videoSrc := flag.String("video-src", "videotestsrc", "GStreamer video src")
+	videoSrc := "rpicamsrc bitrate=800000 preview=false ! video/x-h264, width=640, height=480, framerate=30/1 "
+	//flag.Parse()
 
 	//config := webrtc.Configuration{
 	//	ICEServers: []webrtc.ICEServer{
@@ -48,12 +48,8 @@ func main() {
 		panic(err)
 	}
 	videoTrack = videoTrack_
-	//_, err = peerConnection.AddTrack(firstVideoTrack)
-	//if err != nil {
-	//	panic(err)
-	//}
 
-	pipeline = gst.CreatePipeline("vp8", []*webrtc.TrackLocalStaticSample{videoTrack}, *videoSrc)
+	pipeline = gst.CreatePipeline("auto", []*webrtc.TrackLocalStaticSample{videoTrack}, videoSrc)
 	pipeline.Start()
 
 	bytes, err := os.ReadFile("index.html") // just pass the file name
@@ -121,9 +117,6 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Print(err)
 		return
-		//} else if _, err = peerConnection.AddTrack(audioTrack); err != nil {
-		//	log.Print(err)
-		//	return
 	} else if _, err = peerConnection.AddTrack(videoTrack); err != nil {
 		log.Print(err)
 		return

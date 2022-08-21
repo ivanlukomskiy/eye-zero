@@ -20,7 +20,6 @@ var (
 
 	peerConnectionConfig = webrtc.Configuration{}
 
-	audioTrack = &webrtc.TrackLocalStaticSample{}
 	videoTrack = &webrtc.TrackLocalStaticSample{}
 	pipeline   = &gst.Pipeline{}
 	index      string
@@ -44,16 +43,17 @@ func main() {
 	//}
 
 	// Create a video track
-	firstVideoTrack, err := webrtc.NewTrackLocalStaticSample(webrtc.RTPCodecCapability{MimeType: "video/vp8"}, "video", "pion2")
+	videoTrack_, err := webrtc.NewTrackLocalStaticSample(webrtc.RTPCodecCapability{MimeType: "video/vp8"}, "video", "pion2")
 	if err != nil {
 		panic(err)
 	}
+	videoTrack = videoTrack_
 	//_, err = peerConnection.AddTrack(firstVideoTrack)
 	//if err != nil {
 	//	panic(err)
 	//}
 
-	pipeline = gst.CreatePipeline("vp8", []*webrtc.TrackLocalStaticSample{firstVideoTrack}, *videoSrc)
+	pipeline = gst.CreatePipeline("vp8", []*webrtc.TrackLocalStaticSample{videoTrack}, *videoSrc)
 	pipeline.Start()
 
 	bytes, err := os.ReadFile("index.html") // just pass the file name
@@ -121,9 +121,9 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Print(err)
 		return
-	} else if _, err = peerConnection.AddTrack(audioTrack); err != nil {
-		log.Print(err)
-		return
+		//} else if _, err = peerConnection.AddTrack(audioTrack); err != nil {
+		//	log.Print(err)
+		//	return
 	} else if _, err = peerConnection.AddTrack(videoTrack); err != nil {
 		log.Print(err)
 		return

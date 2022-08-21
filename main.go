@@ -30,20 +30,14 @@ type websocketMessage struct {
 }
 
 func main() {
-	//videoSrc := flag.String("video-src", "videotestsrc", "GStreamer video src")
 	videoSrc := "rpicamsrc bitrate=800000 preview=false ! video/x-h264, width=640, height=480, framerate=30/1 "
-	//flag.Parse()
-
-	//config := webrtc.Configuration{
-	//	ICEServers: []webrtc.ICEServer{
-	//		{
-	//			URLs: []string{"stun:stun.l.google.com:19302"},
-	//		},
-	//	},
-	//}
 
 	// Create a video track
-	videoTrack_, err := webrtc.NewTrackLocalStaticSample(webrtc.RTPCodecCapability{MimeType: "video/h264"}, "video", "pion2")
+	videoTrack_, err := webrtc.NewTrackLocalStaticSample(
+		webrtc.RTPCodecCapability{MimeType: "video/h264"},
+		"video",
+		"rpicam",
+	)
 	if err != nil {
 		panic(err)
 	}
@@ -52,7 +46,7 @@ func main() {
 	pipeline = gst.CreatePipeline("h264", []*webrtc.TrackLocalStaticSample{videoTrack}, videoSrc)
 	pipeline.Start()
 
-	bytes, err := os.ReadFile("index.html") // just pass the file name
+	bytes, err := os.ReadFile("index.html")
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -117,7 +111,8 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Print(err)
 		return
-	} else if _, err = peerConnection.AddTrack(videoTrack); err != nil {
+	}
+	if _, err = peerConnection.AddTrack(videoTrack); err != nil {
 		log.Print(err)
 		return
 	}

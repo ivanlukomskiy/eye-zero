@@ -49,7 +49,7 @@ func main() {
 	}
 	videoTrack = videoTrack_
 
-	pipeline = gst.CreatePipeline("auto", []*webrtc.TrackLocalStaticSample{videoTrack}, videoSrc)
+	pipeline = gst.CreatePipeline("h264", []*webrtc.TrackLocalStaticSample{videoTrack}, videoSrc)
 	pipeline.Start()
 
 	bytes, err := os.ReadFile("index.html") // just pass the file name

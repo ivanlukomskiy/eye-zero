@@ -43,7 +43,7 @@ func main() {
 	//}
 
 	// Create a video track
-	videoTrack_, err := webrtc.NewTrackLocalStaticSample(webrtc.RTPCodecCapability{MimeType: "video/vp8"}, "video", "pion2")
+	videoTrack_, err := webrtc.NewTrackLocalStaticSample(webrtc.RTPCodecCapability{MimeType: "video/h264"}, "video", "pion2")
 	if err != nil {
 		panic(err)
 	}

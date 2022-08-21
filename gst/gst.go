@@ -45,7 +45,7 @@ func CreatePipeline(codecName string, tracks []*webrtc.TrackLocalStaticSample, p
 	pipelineStr := "appsink name=appsink"
 	var clockRate float32
 
-	pipelineStr = "rpicamsrc bitrate=800000 preview=false ! video/x-h264, width=640, height=480, framerate=30/1, stream-format=byte-stream ! " + pipelineStr
+	pipelineStr = "rpicamsrc ! video/x-h264,stream-format=byte-stream ! " + pipelineStr
 	//pipelineStr = "videotestsrc ! video/x-raw,format=I420 ! x264enc speed-preset=ultrafast tune=zerolatency key-int-max=20 ! video/x-h264,stream-format=byte-stream ! " + pipelineStr
 
 	//pipelineStr = pipelineSrc + " ! " + pipelineStr

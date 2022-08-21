@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>eye-zero</title>
+</head>
+<body id="body">
+<video id="video1" autoplay playsinline></video>
+<script>
+    let conn = new WebSocket('ws://' + window.location.host + '/ws')
+    let pc = new RTCPeerConnection()
+    pc.ontrack = function (event) {
+        if (event.track.kind === 'audio') {
+            return
+        }
+        var el = document.getElementById('video1')
+        el.srcObject = event.streams[0]
+        el.autoplay = true
+        el.controls = true
+    }
+    conn.onopen = () => {
+        pc.createOffer({offerToReceiveVideo: true, offerToReceiveAudio: true}).then(offer => {
+            pc.setLocalDescription(offer)
+            conn.send(JSON.stringify({event: 'offer', data: JSON.stringify(offer)}))
+        })
+    }
+    conn.onclose = evt => {
+        console.log('Connection closed')
+    }
+    conn.onmessage = evt => {
+        let msg = JSON.parse(evt.data)
+        if (!msg) {
+            return console.log('failed to parse msg')
+        }
+        switch (msg.event) {
+            case 'answer':
+                answer = JSON.parse(msg.data)
+                if (!answer) {
+                    return console.log('failed to parse answer')
+                }
+                pc.setRemoteDescription(answer)
+        }
+    }
+    window.conn = conn
+</script>
+</body>
+</html>

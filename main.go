@@ -33,7 +33,8 @@ func main() {
 	videoSrc := "rpicamsrc bitrate=800000 preview=false ! video/x-h264, width=640, height=480, framerate=30/1 "
 
 	// Create a video track
-	videoTrack_, err := webrtc.NewTrackLocalStaticSample(
+	var err interface{} = nil
+	videoTrack, err = webrtc.NewTrackLocalStaticSample(
 		webrtc.RTPCodecCapability{MimeType: "video/h264"},
 		"video",
 		"rpicam",
@@ -41,7 +42,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	videoTrack = videoTrack_
 
 	pipeline = gst.CreatePipeline("h264", []*webrtc.TrackLocalStaticSample{videoTrack}, videoSrc)
 	pipeline.Start()

@@ -12,11 +12,9 @@ import (
 	"fmt"
 	"log"
 	"sync"
-	"time"
 	"unsafe"
 
 	"github.com/pion/webrtc/v3"
-	"github.com/pion/webrtc/v3/pkg/media"
 )
 
 func init() {
@@ -26,7 +24,7 @@ func init() {
 // Pipeline is a wrapper for a GStreamer Pipeline
 type Pipeline struct {
 	Pipeline  *C.GstElement
-	tracks    []*webrtc.TrackLocalStaticSample
+	tracks    []*webrtc.TrackLocalStaticRTP
 	id        int
 	codecName string
 	clockRate float32
@@ -42,7 +40,7 @@ const (
 )
 
 // CreatePipeline creates a GStreamer Pipeline
-func CreatePipeline(codecName string, tracks []*webrtc.TrackLocalStaticSample, pipelineSrc string) *Pipeline {
+func CreatePipeline(codecName string, tracks []*webrtc.TrackLocalStaticRTP, pipelineSrc string) *Pipeline {
 	pipelineStr := "appsink name=appsink"
 	var clockRate float32
 
@@ -50,6 +48,9 @@ func CreatePipeline(codecName string, tracks []*webrtc.TrackLocalStaticSample, p
 		"! video/x-h264, framerate=30/1, width=640, height=480, stream-format=byte-stream, profile=constrained-baseline " +
 		"! h264parse config-interval=-1 " +
 		"! video/x-h264, alignment=au, stream-format=byte-stream " +
+		"! h264parse " +
+		"! rtph264pay name=pay0 pt=96 " +
+		"! application/x-rtp" +
 		"! " + pipelineStr
 
 	//"! queue max-size-time=100000000 " +
@@ -93,12 +94,19 @@ func goHandlePipelineBuffer(buffer unsafe.Pointer, bufferLen C.int, duration C.i
 
 	if ok {
 		for _, t := range pipeline.tracks {
-			sampleData := C.GoBytes(buffer, bufferLen)
-			sampleDuration := time.Duration(duration)
-			log.Printf("Handling buffers, buffer len %d, duration %d mks", int(bufferLen), sampleDuration.Microseconds())
-			if err := t.WriteSample(media.Sample{Data: sampleData, Duration: sampleDuration}); err != nil {
-				panic(err)
-			}
+			packetBinary := C.GoBytes(buffer, bufferLen)
+			t.ID()
+			log.Printf("Well, got a packet binary %t", packetBinary == nil)
+			//sampleDuration := time.Duration(duration)
+			//log.Printf("Handling buffers, buffer len %d, duration %d mks", int(bufferLen), sampleDuration.Microseconds())
+			//t.WriteRTP(&rtp.Packet{
+			//	Header:      rtp.Header{},
+			//	Payload:     nil,
+			//	PaddingSize: 0,
+			//})
+			//if err := t.WriteSample(media.Sample{Data: sampleData, Duration: sampleDuration}); err != nil {
+			//	panic(err)
+			//}
 		}
 	} else {
 		fmt.Printf("discarding buffer, no pipeline with id %d", int(pipelineID))
